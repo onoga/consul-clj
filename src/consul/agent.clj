@@ -6,7 +6,7 @@
             [org.httpkit.client :as http]))
 
 
-(def ^:dynamic *consul-url* "http://127.0.0.1:8500/shit")
+(def ^:dynamic *consul-url* "http://127.0.0.1:8500")
 (def ^:private alive (atom #{}))
 
 
