@@ -1,0 +1,38 @@
+= Consul agent client for clojure
+
+Any clojure service can register and send heartbeats to consul agent.
+
+== Start continuous heartbeat
+
+Service will be registered initially.
+If consul or third party deregisters service, registration will be renewed"
+
+[source,clojure]
+----
+(start-heartbeat {:id                                "my-service" ; service id
+                  :address                           "127.0.0.1"  ; service remote address
+                  :port                              8081
+                  :ttl                               "15s"        ; timeout since last heartbeat to set critical state
+                  :deregister-critical-service-after "1m"         ; timeout for consul to deregister service in critical state
+                  :interval-ms                       7500})       ; heartbeat interval, milliseconds
+----
+
+== Stop continuous heartbeat
+
+[source,clojure]
+----
+(stop-heartbeat "my-service")
+----
+
+== Single hearbeat
+
+Service will be registered if not registered yet.
+
+[source,clojure]
+----
+(heartbeat {:id                                "my-service"
+            :address                           "127.0.0.1"
+            :port                              8081
+            :ttl                               "15s"
+            :deregister-critical-service-after "1m"})
+----
