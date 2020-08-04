@@ -1,8 +1,8 @@
-(defproject consul-clj "0.1.0"
+(defproject consul-clj "0.1.1"
   :description "Clojure library for registering service with consul agent"
   :url "https://github.com/tbt-post/consul-clj"
   :license {:name "MIT"}
-  :dependencies [[http-kit "2.3.0"]
+  :dependencies [[http-kit "2.4.0"]
                  [cheshire "5.10.0"]
                  [org.clojure/core.async "1.3.610"]
                  [org.clojure/tools.logging "1.1.0"]]

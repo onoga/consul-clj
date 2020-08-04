@@ -9,7 +9,7 @@
     (binding [agent/*consul-url* "http://127.0.0.1:8500"]
 
       (agent/start-heartbeat {:id                                "my-service"
-                              :address                           "127.0.0.1"
+                              ;:address                          "127.0.0.1"
                               :port                              8080
                               :ttl                               "4s"
                               :deregister-critical-service-after "1m"

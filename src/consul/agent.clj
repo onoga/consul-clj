@@ -3,7 +3,8 @@
             [clojure.core.async :refer [go-loop timeout <!]]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [org.httpkit.client :as http]))
+            [org.httpkit.client :as http])
+  (:import (java.net DatagramSocket InetAddress URL)))
 
 
 (def ^:dynamic *consul-url* "http://127.0.0.1:8500")
@@ -72,22 +73,38 @@
                       (default-callback response))))))
 
 
+(defn- get-host-ip []
+  (try
+    (let [consul-url (URL. *consul-url*)]
+      (-> (doto (DatagramSocket.)
+            (.connect (InetAddress/getByName (.getHost consul-url))
+                      (.getPort consul-url)))
+          (.getLocalAddress)
+          (.getHostAddress)))
+    (catch Exception e
+      (log/warnf "Failed to get host ip: %s: %s" (.getName (class e)) e))))
+
+
+(defn- register-request [{:keys [id name address port ttl deregister-critical-service-after]}]
+  {:id      id
+   :name    (or name id)
+   :address (or address (get-host-ip))
+   :port    port
+   :check   {:CheckId                        (str id ":ttl-check")
+             :TTL                            ttl
+             :DeregisterCriticalServiceAfter deregister-critical-service-after}})
+
+
 (defn heartbeat
   "single heartbeat"
-  [{:keys [id name address port ttl deregister-critical-service-after]}]
-  (let [check-id (str id ":ttl-check")]
-    (check-update-with-register check-id :passing
-                                {:id      id
-                                 :name    (or name id)
-                                 :address address
-                                 :port    port
-                                 :check   {:CheckId                        check-id
-                                           :TTL                            ttl
-                                           :DeregisterCriticalServiceAfter deregister-critical-service-after}})))
+  [params]
+  (check-update-with-register (str (:id params) ":ttl-check")
+                              :passing
+                              (register-request params)))
 
 
 (defn start-heartbeat [{:keys [id interval-ms] :as params}]
-  (service-deregister id)
+  @(service-register (register-request params))
   (swap! alive #(conj % [*consul-url* id]))
   (go-loop []
     (when (@alive [*consul-url* id])
