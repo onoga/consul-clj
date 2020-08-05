@@ -1,4 +1,4 @@
-(defproject consul-clj "0.1.1"
+(defproject net.tbt-post/consul-clj "0.1.1"
   :description "Clojure library for registering service with consul agent"
   :url "https://github.com/tbt-post/consul-clj"
   :license {:name "MIT"}
