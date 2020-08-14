@@ -9,7 +9,8 @@ If consul or third party deregisters service, registration will be renewed"
 
 [source,clojure]
 ----
-(start-heartbeat {:id                                "my-service" ; service id
+(start-heartbeat {:name                              "my-service" ; service name, required
+                  :id                                "my-service@127.0.0.1:8081"  ; id must be unique for agent, defaults to service name
                   :address                           "127.0.0.1"  ; service remote address
                   :port                              8081
                   :ttl                               "15s"        ; timeout since last heartbeat to set critical state
@@ -30,7 +31,8 @@ Service will be registered if not registered yet.
 
 [source,clojure]
 ----
-(heartbeat {:id                                "my-service"
+(heartbeat {:name                              "my-service"
+            :id                                "my-service@127.0.0.1:8081"
             :address                           "127.0.0.1"
             :port                              8081
             :ttl                               "15s"
