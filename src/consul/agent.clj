@@ -73,7 +73,7 @@
                       (default-callback response))))))
 
 
-(defn- get-host-ip []
+(defn get-host-ip []
   (try
     (let [consul-url (URL. *consul-url*)]
       (-> (doto (DatagramSocket.)
@@ -86,11 +86,11 @@
 
 
 (defn- register-request [{:keys [id name address port ttl deregister-critical-service-after]}]
-  {:id      id
-   :name    (or name id)
+  {:name    name
+   :id      (or id name)
    :address (or address (get-host-ip))
    :port    port
-   :check   {:CheckId                        (str id ":ttl-check")
+   :check   {:CheckId                        (str id "/ttl-check")
              :TTL                            ttl
              :DeregisterCriticalServiceAfter deregister-critical-service-after}})
 
@@ -98,7 +98,7 @@
 (defn heartbeat
   "single heartbeat"
   [params]
-  (check-update-with-register (str (:id params) ":ttl-check")
+  (check-update-with-register (str (:id params) "/ttl-check")
                               :passing
                               (register-request params)))
 
